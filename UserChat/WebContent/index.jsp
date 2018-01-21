@@ -32,7 +32,7 @@
 		</div>
 		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1" aria-expanded="false">
 			<ul class="nav navbar-nav">
-				<li class="active"><a href="index.jsp">Main Page</a>
+				<li class="active"><a href="index.jsp">메인</a>
 				<li><a href="find.jsp">친구 찾기</a>
 			</ul> 
 			<%

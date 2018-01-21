@@ -4,6 +4,7 @@
 </head>
 <body>
 	<%
+	/*Testing  */
 	/*initCtx를 중심으로 resource를 찾을 수 있도록  */
 	/* 소스를 발견하면 실제로 적용할 수 있도록 */
 	/* url 주소에 접근 */

@@ -2,6 +2,18 @@
     pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
+<%
+		String userID =  null;
+		if(session.getAttribute("userID")!= null){
+			userID = (String)session.getAttribute("userID");
+		}
+		if(userID == null){
+			session.setAttribute("messageType", "오류 메시지");
+			session.setAttribute("messageContent", "현재 로그인이 되어 있지 않습니다.");
+			response.sendRedirect("index.jsp");
+			return;
+		}
+	%>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,15 +23,49 @@
 	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 	<script src="js/bootstrap.js"></script>
 	
+	<script type="text/javascript">
+		function findFunction(){
+			var userID = $('#findID').val();
+			$.ajax({
+				type:'POST',
+				url: './UserRegisterCheckServlet',
+				data: {userID: userID},
+				success : function(result){
+					if(result == 0){
+						$('#checkMessage').html('친구찾기에 성공했습니다.');
+						$('#checkType').attr('class','modal-content panel-success');
+						getFriend(userID);
+					}else{
+						$('#checkMessage').html('친구를 찾을 수 없습니다.');
+						$('#checkType').attr('class','modal-content panel-warning');
+						failFriend();
+					}
+					$('#checkModal').modal("show");
+				}
+			});
+		}
+		
+		function getFriend(findID){
+			$('#friendResult').html('<thead>'+
+					'<tr>' +
+					'<th><h4>검색결과</h4></th>' +
+					'</tr>' +
+					'</thead>'+
+					'<tbody>'+
+					'<tr>'+
+					'<td style="text-align:center;"><h3>'+findID+'</h3><a href="chat.jsp?toID='+ encodeURIComponent(findID)+'" class="btn btn-primary pull-right">' + '메시지 보내기</a></td>' +
+					'</tr>'+
+					'</tbody>');
+		}
+		
+		function failFriend(){
+			$('#friendResult').html('');
+		}
+		
+	</script>
 </head>
 <body>
-	<%
-		String userID =  null;
-		if(session.getAttribute("userID")!= null){
-			userID = (String)session.getAttribute("userID");
-		}
 	
-	%>
 	
 	<nav class="navbar navbar-default">
 		<div class="navbar-header">
@@ -33,27 +79,10 @@
 		</div>
 		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1" aria-expanded="false">
 			<ul class="nav navbar-nav">
-				<li><a href="index.jsp">Main Page</a>
+				<li><a href="index.jsp">메인</a>
 				<li class="active"><a href="find.jsp">친구 찾기</a>
 			</ul> 
-			<%
-				if(userID == null){
-			%>	
-			<ul class="nav navbar-nav navbar-right">
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle"	data-toggle="dropdown" role="buton" aria-haspopup="true" aria-expanded="false">
-						접속하기<span class="caret"></span>
-					
-					</a>
-					<ul class="dropdown-menu">
-						<li><a href="login.jsp">login</a></li>
-						<li><a href="join.jsp">join</a></li>
-					</ul>
-				</li>
-			</ul>					
-			<% 
-				}else{
-			%>
+			
 			<ul class="nav navbar-nav navbar-right">
 				<li class="dropdown">
 					<a href="#" class="dropdown-toggle"	data-toggle="dropdown" role="buton" aria-haspopup="true" aria-expanded="false">
@@ -65,10 +94,6 @@
 				</li>
 			</ul>	
 			
-			
-			<%
-				}
-			%>
 		</div>
 	</nav>
 	
@@ -85,18 +110,17 @@
 					<td><input class="form-control" type="text" id="findID" maxlength="20" placeholder="찾고싶은 ID를 입력하세요"></td>
 				</tr>
 				<tr>
-					<td colspan="2"><button class="btn btn-primary pull-right" onclick="findFunction();" >검색</button></td>
+					<td colspan="2"><button class="btn btn-primary pull-right" onclick ="findFunction();">검색</button></td>
 				</tr>
 			</tbody>
 		</table>
 	</div>
 	
 	<div class="container">
-		<table id="friendResult" class="table table-bordered table-hover" style="text-align: center; border: 1px solid #dddddd;"  >
+		<table id="friendResult" class="table table-bordered table-hover" style="text-align: center; border: 1px solid #dddddd;">
 		
 		</table>
 	</div>
-	
 	
 	<%
 		String messageContent = null;
@@ -142,6 +166,7 @@
 		session.removeAttribute("messageType");
 		}
 	%>
+	
 	<div class="modal fade" id="checkModal" tabindex="-1" role="dialog" aria-hidden="true">
 			<div class="vertical-alignment-helper">
 				<div class="modal-dialog vertical-align-center">
@@ -166,7 +191,5 @@
 			</div>
 	</div>
 	
-	
-
 </body>
 </html>
